@@ -1,44 +1,30 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
+	"tobuy-backend/controllers"
 	"tobuy-backend/internal/db"
+
 	// "tobuy-backend/internal/redis"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
-
-// handler function สำหรับ root path "/"
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello, Go Backend Server!")
-}
-
-func getToBuyListHandler(w http.ResponseWriter, r *http.Request) {
-	items, err := db.GetAllToBuyItems()
-	if err != nil {
-		http.Error(w, "Error fetching items: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(items)
-}
 
 func main() {
 
 	db.ConnectPostgres()
-	db.CreateTable()
+	db.CreateToBuyListTable()
 	// redis.ConnectRedis()
 
-	// สร้าง route
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/tobuy", getToBuyListHandler)
+	appEcho := echo.New()
+	appEcho.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `${time_rfc3339} ${method} [${uri}] ${status} [${error || "error"}] | ${latency_human}` + "\n",
+	}))
 
-	// ตั้งค่าพอร์ต และเริ่ม server
-	port := ":8080"
-	fmt.Println("Server is running on port", port)
-	if err := http.ListenAndServe(port, nil); err != nil {
-		log.Fatal("Server failed to start:", err)
-	}
+	appEcho.GET("/api/tobuy", controllers.GetAllToBuyLists)
+
+	PORT := "8080"
+	log.Println("starting... port : ", PORT)
+	log.Fatal(appEcho.Start(":" + PORT))
+
 }
