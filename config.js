@@ -1,13 +1,12 @@
 require('dotenv').config();
 
 const config = {
+  environ: process.env.NODE_ENV,
   port_b: process.env.PORT_BACKEND || 8080,
   port_f: process.env.PORT_FRONTEND,
-  host: process.env.HOST,
-  postgres_user: process.env.POSTGRES_USER,
-  postgres_password: process.env.POSTGRES_PASSWORD,
-  postgres_db: process.env.POSTGRES_DB,
-  postgres_port: process.env.POSTGRES_PORT
+  host_b: process.env.HOST_BACKEND,
+  db_url: process.env.DB_URL,
+  jwt_secret: process.env.JWT_SECRET
 };
 
 module.exports = config;

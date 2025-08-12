@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const {pool} = require('../DB/configDb')
-const { CHECKUSER, SIGNUPUSER } = require('../Schemas/signUpUser')
+const { CHECKUSER, SIGNUPUSER } = require('../schemas/signUpUser')
 
 exports.signupController = async (req, res) => {
     const { username, email, password_hash } = req.body;
