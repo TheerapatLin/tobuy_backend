@@ -1,12 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
-const {initDB} = require('./DB/config')
+const {initDB} = require('./DB/configDb')
 const cors = require('cors');
 const {signupController} = require('./controllers/signUpControllers')
+const config = require('./config');
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: `${config.host}${config.port_f}`
 }));
 app.use(express.json());
 app.use(morgan('combined'));
@@ -24,8 +25,8 @@ app.post('/echo', (req, res) => {
 
 app.post('/api/signup', signupController)
 
-const PORT = 8080;
+const PORT = config.port_b;
 app.listen(PORT, async () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server running at http://${config.host}${PORT}`);
     await initDB();
 });

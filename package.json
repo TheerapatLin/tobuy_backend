@@ -9,6 +9,8 @@
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
+    "cross-env": "^10.0.0",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
@@ -16,7 +18,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "cross-env NODE_ENV=development nodemon index.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

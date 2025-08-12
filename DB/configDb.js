@@ -1,12 +1,13 @@
 const { Pool } = require('pg');
 const { CREATEROLESTABLE, CREATEUSERSTABLE }  = require(`../Schemas/createUsersTable`)
+const config = require('../config')
 
 const pool = new Pool({
-  user: 'admin',
-  host: 'localhost',
-  database: 'tobuy_list',
-  password: 'admin',
-  port: 5432,
+  user: config.postgres_user,
+  host: config.host,
+  database: config.postgres_db,
+  password: config.postgres_password,
+  port: config.postgres_port,
 });
 
 async function initDB() {
