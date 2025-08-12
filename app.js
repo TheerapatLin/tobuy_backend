@@ -3,9 +3,9 @@ const morgan = require('morgan');
 const { initDB } = require('./DB/configDb')
 const cors = require('cors');
 const config = require('./config');
-const signupRoute = require('./routes/signupRoute')
 
 const app = express()
+
 app.use(cors({
     origin: `${config.host}${config.port_f}`
 }));
@@ -23,7 +23,14 @@ app.post('/echo', (req, res) => {
     });
 });
 
+const signupRoute = require('./routes/signupRoute')
 app.use('/api', signupRoute)
+
+const authRoute = require('./routes/authRoute');
+app.use('/api/auth', authRoute);
+
+const protectedRoute = require('./routes/protectedRoute');
+app.use('/api', protectedRoute);
 
 const PORT = config.port_b;
 app.listen(PORT, async () => {

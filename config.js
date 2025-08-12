@@ -6,7 +6,8 @@ const config = {
   port_f: process.env.PORT_FRONTEND,
   host_b: process.env.HOST_BACKEND,
   db_url: process.env.DB_URL,
-  jwt_secret: process.env.JWT_SECRET
+  jwt_secret: process.env.JWT_SECRET,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN
 };
 
 module.exports = config;
