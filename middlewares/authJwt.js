@@ -1,25 +1,38 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const { getAuthCookie, clearAuthCookie } = require('./cookieAuth');
 
-exports.verifyToken = (req, res, next) => { // next คือเรียกใช้งาน func ถัดไป
+exports.verifyToken = (req, res, next) => {
+  // ตรวจสอบ token จาก cookie ก่อน
+  const cookieToken = getAuthCookie(req);
+  
+  // ถ้าไม่มี cookie token ให้ตรวจสอบจาก Authorization header (backward compatibility)
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Token is incorrect or unidentify token' });
+  const headerToken = authHeader ? authHeader.split(' ')[1] : null;
+  
+  const token = cookieToken || headerToken;
+  
+  if (!token) {
+    return res.status(401).json({ 
+      message: 'Access token not found',
+      error: 'NO_TOKEN'
+    });
   }
 
-  // filter `bearer` out
-  const token = authHeader.split(' ')[1];
-  
-  /*
-  callback (err, decoded)
-  ฟังก์ชันที่จะถูกเรียกหลัง verify จบ | err: เกิดเมื่อ verify ล้มเหลว (หมดอายุหรือเซ็นไม่ตรงกัน) | decoded: payload ที่ถูกถอดรหัสแล้ว
-  */
   jwt.verify(token, config.jwt_secret, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ message: 'Token Expired or Incorrect.' });
+      // ลบ cookie ที่ไม่ถูกต้อง
+      if (cookieToken) {
+        clearAuthCookie(res);
+      }
+      return res.status(401).json({ 
+        message: 'Token expired or invalid',
+        error: 'INVALID_TOKEN'
+      });
     }
+    
     // เก็บข้อมูลผู้ใช้ที่ decode ไว้ให้ route ต่อไปเรียกใช้
     req.user = decoded;
-    next(); // เรียกใช้งาน func ถัดไป
+    next();
   });
 };

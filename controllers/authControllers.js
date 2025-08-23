@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../DB/configDb');
 const { CHECKUSER, SIGNUPUSER } = require('../schemas/signUpUser');
 const config = require('../config');
+const { setAuthCookie, setRefreshCookie, clearAuthCookie, clearRefreshCookie } = require('../middlewares/cookieAuth');
 
 exports.signinController = async (req, res) => {
     const { username, password } = req.body;
@@ -33,21 +34,23 @@ exports.signinController = async (req, res) => {
             });
         }
 
-        // สร้าง JWT
+        // สร้าง JWT payload
         const payload = {
             id: user.id,
             username: user.username,
             email: user.email,
             roleId: user.role_id
         };
-        const token = jwt.sign(payload, config.jwt_secret, {
-            expiresIn: config.jwtExpiresIn
-        });
 
-        // ส่งกลับ token
+        // สร้าง token และตั้งค่า httpOnly cookie
+        const token = setAuthCookie(res, payload);
+        
+        // สร้าง refresh token
+        setRefreshCookie(res, user.id);
+
+        // ส่งกลับข้อมูล user (ไม่ส่ง token กลับไปแล้ว)
         return res.status(200).json({
             message: 'Signin Complete',
-            token,
             user: {
                 id: user.id,
                 username: user.username,
@@ -113,6 +116,24 @@ exports.signupController = async (req, res) => {
         console.error('Signup error:', error);
         res.status(500).json({ 
             message: 'Internal Server Error.',
+            error: 'INTERNAL_SERVER_ERROR'
+        });
+    }
+};
+
+exports.logoutController = async (req, res) => {
+    try {
+        // ลบ cookies ทั้งหมด
+        clearAuthCookie(res);
+        clearRefreshCookie(res);
+        
+        return res.status(200).json({
+            message: 'Logout successful'
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        return res.status(500).json({ 
+            message: 'Internal Server Error',
             error: 'INTERNAL_SERVER_ERROR'
         });
     }

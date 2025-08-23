@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { signinController, signupController } = require('../controllers/authControllers');
+const { signinController, signupController, logoutController } = require('../controllers/authControllers');
 const { 
   signinValidation, 
   signupValidation, 
   handleValidationErrors 
 } = require('../middlewares/validation');
+const { loginLimiter, signupLimiter } = require('../middlewares/rateLimiter');
 
-router.post('/signin', signinValidation, handleValidationErrors, signinController);
-router.post('/signup', signupValidation, handleValidationErrors, signupController);
+router.post('/signin', loginLimiter, signinValidation, handleValidationErrors, signinController);
+router.post('/signup', signupLimiter, signupValidation, handleValidationErrors, signupController);
+router.post('/logout', logoutController);
 
 module.exports = router;
