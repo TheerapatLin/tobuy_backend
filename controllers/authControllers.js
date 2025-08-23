@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { pool } = require('../DB/configDb');
 const { CHECKUSER, SIGNUPUSER } = require('../schemas/signUpUser');
-const config = require('../config');
 const { setAuthCookie, setRefreshCookie, clearAuthCookie, clearRefreshCookie } = require('../middlewares/cookieAuth');
 
 exports.signinController = async (req, res) => {
@@ -137,4 +135,36 @@ exports.logoutController = async (req, res) => {
             error: 'INTERNAL_SERVER_ERROR'
         });
     }
+};
+
+exports.refreshTokenController = (req, res) => {
+    const { getRefreshCookie, setAuthCookie } = require('../middlewares/cookieAuth');
+    const jwt = require('jsonwebtoken');
+    const config = require('../config');
+
+    const refreshToken = getRefreshCookie(req);
+    if (!refreshToken) {
+        return res.status(401).json({
+            message: 'Refresh token not found',
+            error: 'NO_REFRESH_TOKEN'
+        });
+    }
+
+    jwt.verify(refreshToken, config.jwt_secret, (err, decoded) => {
+        if (err || decoded.type !== 'refresh') {
+            return res.status(401).json({
+                message: 'Refresh token expired or invalid',
+                error: 'INVALID_REFRESH_TOKEN'
+            });
+        }
+
+        // สร้าง access token ใหม่
+        const payload = {
+            id: decoded.id
+        };
+        setAuthCookie(res, payload);
+        return res.status(200).json({
+            message: 'Access token refreshed'
+        });
+    });
 };
