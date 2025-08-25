@@ -32,10 +32,16 @@ const ADDITEM = `
 
 const GETITEMS_BY_USER = `SELECT * FROM tobuy_items WHERE user_id = (SELECT id FROM users WHERE username = $1)`;
 
+const DELETEITEMS_BY_USER = `
+    DELETE FROM tobuy_items 
+    WHERE id = $1 AND user_id = (SELECT id FROM users WHERE username = $2);
+`
+
 module.exports = {
     CREATETOBUYLISTTABLE,
     CREATETOBUYITEMSTABLE,
     CREATETOBUYLISTITEMSTABLE,
     ADDITEM,
-    GETITEMS_BY_USER
+    GETITEMS_BY_USER,
+    DELETEITEMS_BY_USER
 };
