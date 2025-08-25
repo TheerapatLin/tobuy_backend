@@ -60,7 +60,6 @@ app.use((err, req, res, next) => {
 // Apply general rate limiting to all routes
 app.use(generalLimiter);
 
-
 // Get / api test
 app.get('/', (req, res) => {
     res.send('Hello Node.js Backend!');
@@ -77,7 +76,6 @@ app.post('/echo', (req, res) => {
 // signin & signup 
 const authRoute = require('./routes/authRoute')
 app.use('/api/auth', authRoute)
-app.use('/api/auth', authRoute);
 
 // test access with jwt
 const protectedRoute = require('./routes/protectedRoute');

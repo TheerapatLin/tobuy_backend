@@ -1,0 +1,27 @@
+const CREATETOBUYLISTTABLE = `
+    CREATE TABLE IF NOT EXISTS tobuy_lists (
+    id SERIAL PRIMARY KEY,
+    list_name VARCHAR(255) NOT NULL,
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);
+`
+
+const CREATETOBUYITEMSTABLE = ` 
+    CREATE TABLE IF NOT EXISTS tobuy_items (
+    id SERIAL PRIMARY KEY,
+    item_name VARCHAR(255) NOT NULL
+);
+`
+
+const CREATETOBUYLISTITEMSTABLE = `
+    CREATE TABLE IF NOT EXISTS tobuy_list_items (
+    list_id INT NOT NULL,
+    item_id INT NOT NULL,
+    PRIMARY KEY (list_id, item_id),
+    FOREIGN KEY (list_id) REFERENCES tobuy_lists(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES tobuy_items(id) ON DELETE CASCADE
+);
+`
+
+module.exports = { CREATETOBUYLISTTABLE, CREATETOBUYITEMSTABLE, CREATETOBUYLISTITEMSTABLE };

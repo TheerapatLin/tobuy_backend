@@ -53,7 +53,8 @@ exports.signinController = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                roleId: user.role_id
+                roleId: user.role_id,
+                // token: token
             }
         });
     } catch (error) {

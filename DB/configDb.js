@@ -1,5 +1,13 @@
 const { Pool } = require('pg');
-const { CREATEROLESTABLE, CREATEUSERSTABLE }  = require(`../schemas/createUsersTable`)
+const { 
+  CREATEROLESTABLE, 
+  CREATEUSERSTABLE,
+ }  = require(`../schemas/createUsersTable`)
+const { 
+  CREATETOBUYLISTTABLE,
+  CREATETOBUYITEMSTABLE,
+  CREATETOBUYLISTITEMSTABLE
+ }  = require(`../schemas/toBuySchemas`)
 const config = require('../config')
 
 // connect to db_url
@@ -15,6 +23,15 @@ async function initDB() {
 
     await pool.query(CREATEUSERSTABLE);
     console.log('✅ Users table created or already exists.');
+
+    await pool.query(CREATETOBUYLISTTABLE);
+    console.log('✅ ToBuyLists table created or already exists.');
+
+    await pool.query(CREATETOBUYITEMSTABLE);
+    console.log('✅ ToBuyItems table created or already exists.');
+
+    await pool.query(CREATETOBUYLISTITEMSTABLE);
+    console.log('✅ ToBuyListItems table created or already exists.');
   } catch (err) {
     console.error('❌ Error initializing database:', err);
   }
