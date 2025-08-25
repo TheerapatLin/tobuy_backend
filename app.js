@@ -81,6 +81,9 @@ app.use('/api/auth', authRoute)
 const protectedRoute = require('./routes/protectedRoute');
 app.use('/api', protectedRoute);
 
+const itemListRoute = require('./routes/itemListRoute');
+app.use('/api/item-list', itemListRoute);
+
 // run server
 const PORT = config.port_b;
 app.listen(PORT, async () => {
